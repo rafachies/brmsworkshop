@@ -1,9 +1,14 @@
 package com.redhat.brmsworkshop;
 
 import org.drools.KnowledgeBase;
+import org.drools.WorkingMemory;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentFactory;
 import org.drools.definition.type.FactType;
+import org.drools.event.AgendaEventListener;
+import org.drools.event.DefaultAgendaEventListener;
+import org.drools.event.RuleFlowGroupActivatedEvent;
+import org.drools.impl.StatefulKnowledgeSessionImpl;
 import org.drools.io.ResourceChangeScannerConfiguration;
 import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ClassPathResource;
@@ -24,19 +29,18 @@ public class Main {
 		KnowledgeBase knowledgeBase = knowledgeAgent.getKnowledgeBase();
 		StatefulKnowledgeSession session = knowledgeBase.newStatefulKnowledgeSession();
 		startScannerService();
+		configureRulesFirePolicy(session);
 		FactType factType = knowledgeBase.getFactType("cleartech", "Customer");
 		Object fact = factType.newInstance();
 		factType.set(fact, "age", 28);
 		factType.set(fact, "monthlyIncome", 5000);
 		factType.set(fact, "cpf", "111111111");
-		session.insert(fact);	
-
-		
-		
+		session.insert(fact);
 		session.getWorkItemManager().registerWorkItemHandler("SCPC", new SCPCWorkItemHandler(session));
 		session.startProcess("cleartech.CreditProcess");
-		
-		
+
+		Thread.sleep(5000);
+
 		System.out.println("aprovado? -> " + factType.get(fact, "approved"));
 
 	}
@@ -48,5 +52,15 @@ public class Main {
 		ResourceFactory.getResourceChangeNotifierService().start();
 		ResourceFactory.getResourceChangeScannerService().start();
 	}
+
+	private void configureRulesFirePolicy(StatefulKnowledgeSession knowledgeSession) {
+		final AgendaEventListener agendaEventListener = new DefaultAgendaEventListener() {
+			public void afterRuleFlowGroupActivated(RuleFlowGroupActivatedEvent event, WorkingMemory workingMemory) {
+				workingMemory.fireAllRules();
+			}
+		} ;
+		((StatefulKnowledgeSessionImpl) knowledgeSession).session.addEventListener(agendaEventListener);
+	}
+
 
 }
