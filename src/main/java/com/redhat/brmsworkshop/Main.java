@@ -9,6 +9,8 @@ import org.drools.io.ResourceFactory;
 import org.drools.io.impl.ClassPathResource;
 import org.drools.runtime.StatefulKnowledgeSession;
 
+import com.redhat.brmsworkshop.handler.SCPCWorkItemHandler;
+
 
 public class Main {
 
@@ -26,18 +28,14 @@ public class Main {
 		Object fact = factType.newInstance();
 		factType.set(fact, "age", 28);
 		session.insert(fact);	
-		session.fireAllRules();
+		
+		session.getWorkItemManager().registerWorkItemHandler("SCPC", new SCPCWorkItemHandler());
+		
+		session.startProcess("cleartech.CreditProcess");
+		
+		
 		System.out.println("aprovado? -> " + factType.get(fact, "approved"));
 
-		Thread.sleep(90000); //Let's wait until rchies change the rule
-
-		Object fact2 = factType.newInstance();
-		factType.set(fact2, "age", 28);
-		KnowledgeBase knowledgeBase2 = knowledgeAgent.getKnowledgeBase();
-		StatefulKnowledgeSession session2 = knowledgeBase2.newStatefulKnowledgeSession();
-		session2.insert(fact2);
-		session2.fireAllRules();
-		System.out.println("aprovado? -> " + factType.get(fact2, "approved"));
 	}
 
 	private void startScannerService() {

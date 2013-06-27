@@ -26,6 +26,16 @@
 			<artifactId>drools-compiler</artifactId>
 			<version>5.3.1.BRMS</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jbpm</groupId>
+			<artifactId>jbpm-bpmn2</artifactId>
+			<version>5.3.1.BRMS</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jbpm</groupId>
+			<artifactId>jbpm-flow</artifactId>
+			<version>5.3.1.BRMS</version>
+		</dependency>
 
 	</dependencies>
 </project>
