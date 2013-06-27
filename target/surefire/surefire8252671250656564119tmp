@@ -1,0 +1,5 @@
+#surefire
+#Thu Jun 27 19:34:35 BRT 2013
+user.dir=/home/rafael/redhat/cleartech/workspace/brmsworkshop
+localRepository=/home/rafael/.m2/repository
+basedir=/home/rafael/redhat/cleartech/workspace/brmsworkshop

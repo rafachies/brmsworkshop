@@ -27,10 +27,13 @@ public class Main {
 		FactType factType = knowledgeBase.getFactType("cleartech", "Customer");
 		Object fact = factType.newInstance();
 		factType.set(fact, "age", 28);
+		factType.set(fact, "monthlyIncome", 5000);
+		factType.set(fact, "cpf", "111111111");
 		session.insert(fact);	
+
 		
-		session.getWorkItemManager().registerWorkItemHandler("SCPC", new SCPCWorkItemHandler());
 		
+		session.getWorkItemManager().registerWorkItemHandler("SCPC", new SCPCWorkItemHandler(session));
 		session.startProcess("cleartech.CreditProcess");
 		
 		
