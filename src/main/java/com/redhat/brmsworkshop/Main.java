@@ -1,5 +1,8 @@
 package com.redhat.brmsworkshop;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.drools.KnowledgeBase;
 import org.drools.WorkingMemory;
 import org.drools.agent.KnowledgeAgent;
@@ -35,7 +38,9 @@ public class Main {
 		session.insert(customer);
 		session.getWorkItemManager().registerWorkItemHandler("SCPC", new SCPCWorkItemHandler(session));
 		session.getWorkItemManager().registerWorkItemHandler("Approver", new ApproverWorkItemHandler(session));
-		session.startProcess("cleartech.CreditProcess");
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("customer", customer);
+		session.startProcess("cleartech.CreditProcess", map);
 
 		Thread.sleep(5000);
 
