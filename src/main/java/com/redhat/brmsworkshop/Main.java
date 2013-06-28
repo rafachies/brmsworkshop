@@ -4,7 +4,6 @@ import org.drools.KnowledgeBase;
 import org.drools.WorkingMemory;
 import org.drools.agent.KnowledgeAgent;
 import org.drools.agent.KnowledgeAgentFactory;
-import org.drools.definition.type.FactType;
 import org.drools.event.AgendaEventListener;
 import org.drools.event.DefaultAgendaEventListener;
 import org.drools.event.RuleFlowGroupActivatedEvent;
@@ -16,6 +15,7 @@ import org.drools.runtime.StatefulKnowledgeSession;
 
 import com.redhat.brmsworkshop.handler.ApproverWorkItemHandler;
 import com.redhat.brmsworkshop.handler.SCPCWorkItemHandler;
+import com.redhat.brmsworkshop.model.Customer;
 
 
 public class Main {
@@ -31,20 +31,24 @@ public class Main {
 		StatefulKnowledgeSession session = knowledgeBase.newStatefulKnowledgeSession();
 		startScannerService();
 		configureRulesFirePolicy(session);
-		FactType factType = knowledgeBase.getFactType("cleartech", "Customer");
-		Object fact = factType.newInstance();
-		factType.set(fact, "age", 28);
-		factType.set(fact, "monthlyIncome", 5000);
-		factType.set(fact, "cpf", "11111111111");
-		session.insert(fact);
+		Customer customer = createCustomer();
+		session.insert(customer);
 		session.getWorkItemManager().registerWorkItemHandler("SCPC", new SCPCWorkItemHandler(session));
 		session.getWorkItemManager().registerWorkItemHandler("Approver", new ApproverWorkItemHandler(session));
 		session.startProcess("cleartech.CreditProcess");
 
 		Thread.sleep(5000);
 
-		System.out.println("aprovado: " + factType.get(fact, "approved"));
-		System.out.println("credit: " + factType.get(fact, "creditValue"));
+		System.out.println("aprovado: " + customer.getApproved());
+		System.out.println("credit: " + customer.getCreditValue());
+	}
+
+	private Customer createCustomer() {
+		Customer customer = new Customer();
+		customer.setAge(28);
+		customer.setCpf("31937243869");
+		customer.setMonthlyIncome(5000);
+		return customer;
 	}
 
 	private void startScannerService() {
