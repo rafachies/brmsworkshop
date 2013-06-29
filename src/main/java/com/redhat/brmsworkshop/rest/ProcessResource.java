@@ -36,12 +36,27 @@ public class ProcessResource {
 
 	@GET
 	@Path("/tasks/{user}")
-	public String startProcess(@PathParam("user") String user) throws Exception{
+	public String listTask(@PathParam("user") String user) throws Exception{
 		TaskSummary task = humanTaskManager.getNextTask(user);
-		return
-		task.getId() + " " +
-		task.getProcessInstanceId() + " " +
-		task.getName();
+		Map<String, Object> taskInput = humanTaskManager.getDataInput(task);
+		Customer customer = (Customer) taskInput.get("customer");
+		return "taskId: " + task.getId() + "\ncpf: " + customer.getCpf() + "\nage: " + customer.getAge() + "\nrenda " + customer.getMonthlyIncome() + "\nscore: " + customer.getScpcScore() + "\ncredit: " + customer.getCreditValue();
+	}
+	
+	@GET
+	@Path("/tasks/{taskId}/{user}")
+	public String startTask(@PathParam("taskId") Long taskId, @PathParam("user") String user) throws Exception{
+		humanTaskManager.startTask(taskId, user);
+		return "STARTED";
+	}
+	
+	@GET
+	@Path("/tasks/complete/{taskId}/{user}")
+	public String endTask(@PathParam("taskId") Long taskId, @PathParam("user") String user) throws Exception{
+		HashMap<String, Object> dataOutput = new HashMap<String, Object>();
+		dataOutput.put("riskApproved", true);
+		humanTaskManager.endTask(taskId, user, dataOutput);
+		return "STARTED";
 	}
 	
 	@GET
